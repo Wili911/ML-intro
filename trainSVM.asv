@@ -1,0 +1,14 @@
+function [w, b] = trainSVM(points, points_classes)
+    H = eye(3);
+    f = zeros(3);
+    bpoints = [points ones(30,1)];
+    l = -Inf * ones(30, 1)
+    B = - points_classes;
+    A = -bpoints';
+    %x = quadprog(H,f,A,B);
+    m = osqp;
+    m.setup(H,f,A,l,B)
+    w = x(1:2);
+    b = x(3);
+
+
