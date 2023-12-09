@@ -1,8 +1,6 @@
 function [clusters, cluster_means] = KmeansPlus(points, K) 
-    % points: N x 2
-    N = length(points);
-
-
+    % points: N x 2 o N x 3
+    [N,d] = size(points);
     % Generate random x and y coordinates within the specified ranges
     cluster_means = points(randi([1, N]),:);
     clusters = zeros(N,1);
@@ -21,7 +19,7 @@ function [clusters, cluster_means] = KmeansPlus(points, K)
         dist_map = dist_map.^2;
         dist_map = dist_map / sum(dist_map);
         index = find(rand <= cumsum(dist_map), 1, 'first');
-        cluster_means = [cluster_means; points(index,1:2)];
+        cluster_means = [cluster_means; points(index,:)];
     end
 
     for i=1:1000
@@ -29,16 +27,17 @@ function [clusters, cluster_means] = KmeansPlus(points, K)
             [~,index] = min(vecnorm(points(j,:)-cluster_means,2,2));
             clusters(j) = index;
         end
-        upd_cluster_means = zeros(K,2);
+        upd_cluster_means = zeros(K,d);
         for k=1:K
             kpoints = points(clusters==k,:);
             if ~isempty(kpoints)
                 upd_cluster_means(k,:) = mean(kpoints);
             end
         end
-        if norm(upd_cluster_means-cluster_means) < 1e-6
+        if norm(upd_cluster_means-cluster_means) < 1e-8
             break
         end
         cluster_means = upd_cluster_means;
     end
+
     

@@ -16,19 +16,16 @@ function [] = KmeansStats(pclasses,classes)
                 end
             else
                 if isTrue
-                    TN = TN + 1;
-                else
                     FN = FN + 1;
+                else
+                    TN = TN + 1;
                 end
             end
         end
     end
     fprintf('-----------------\n');
-    fprintf('| T | F |       |\n');
-    fprintf('-----------------\n');
     fprintf('| P | %2d | %2d  |\n', TP, FP);
-    fprintf('| N | %2d | %2d  |\n', TN, FN);
-    fprintf('-----------------\n');
+    fprintf('| N | %2d | %2d  |\n', FN, TN);
     RI = (TP + TN) / (N*(N-1)/2);
     fprintf('RI = %2d\n',RI)
     P = TP / (TP + FP);
@@ -36,31 +33,21 @@ function [] = KmeansStats(pclasses,classes)
     R = TP / (TP + FN);
     fprintf('Reclam = %2d\n',R)
     
-    values = [TP, FP; TN, FN];
+    values = [TP, FN; FP, TN];
 
     % Normalize the data to range [0, 1] for colormap intensity
-    normalizedValues = 1 - log(values) / (N*(N-1)/2);
-        
+    disp(values)
     % Create a heatmap-like visualization using imagesc with transparency
-    figure(2);
-    imshow(normalizedValues, [])
-    % Set axis labels and title
-    axis on
+    clf
+    figure(1)
+    h = heatmap(values);
+    h.ColorScaling = 'log';
+    h.XDisplayLabels([1,2]) = {''}; % replace rejected tick labels with empties    %imshow(normalizedValues, cmap)
+    h.YDisplayLabels([1,2]) = {''}; % replace rejected tick labels with empties    %imshow(normalizedValues, cmap)
     ax = gca;
-    ax.FontSize = 30; 
-    xticks([1, 2]);
-    yticks([1, 2]);
-    xticklabels({'T', 'F'});
-    yticklabels({'P', 'N'});
-    
-    % Add text annotations with actual values in each cell
-    for i = 1:size(values, 1)
-        for j = 1:size(values, 2)
-            text(j, i, num2str(values(i, j)), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', 20, 'FontWeight', 'bold', 'Color', 'red');
-        end
-    end
+    ax.FontSize = 16;
+    % exportgraphics(ax,['../', PATH_FIGURES,'/KmeansConfus.png']);
 
-    
     
     
     
